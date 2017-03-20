@@ -66,7 +66,6 @@ database.ref().on("child_added", function(childSnapshot, prevChildKey) {
 	var trainFrequency = childSnapshot.val().frequency;
 	var trainArrival = moment(trainTime, "HH:mm").add(trainFrequency, "m").format("hh:mm A");
 	
-
 	// Train info
 	console.log("Firebase-Train name: " + trainName);
 	console.log("Firebase-Train destination: " + trainDestination);
@@ -74,21 +73,16 @@ database.ref().on("child_added", function(childSnapshot, prevChildKey) {
 	console.log("Firebase-Train time: " + trainTime);
 	console.log("Firebase-Next arrival: " + trainArrival);
 
-
+	// Convert train arrival from 12hr to 24hr
+	var convertArrival = moment(trainArrival, "hh:mm A").format("HH:mm");
+	console.log("Convert Arrival time: " + convertArrival);
 	// Calculate Minutes Away
-	var minutesAway = moment(trainArrival, "HH:mm").subtract(trainTime, "HH:mm").format("m");
+	var ms = moment(convertArrival, "HH:mm").diff(moment(trainTime, "HH:mm"));
+	var d = moment.duration(ms);
+	var minutesAway = Math.floor(d.asHours()) + moment.utc(ms).format("m");
 	console.log("Minutes away: " + minutesAway);
-	// moment($("#train-time-input").val().trim(), "HH:mm").subtract(10, "years").format("X");
-
-	// var minutesAway = moment.utc(moment(localTime, "hh:mm").diff(moment(trainTime, "hh:mm"))).format("hh:mm");
-	// console.log("mins away: " + minutesAway);
-	// var minutesAway = moment(localTime, "hh:mm").diff(moment(trainTime, "hh:mm"));
-	// console.log(minutesAway);
-
-
+	
 	// Add each train data to the table
 	$("#train-table > tbody").append("<tr><td>" + trainName + "</td><td>" + trainDestination + "</td><td>" + trainFrequency + "</td></td>" + trainTime + "</td><td>" + trainArrival + "</td><td>" + minutesAway + "</td></tr>");
-
-
 
 }); // "child_added" function
